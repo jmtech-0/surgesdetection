@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Network Traffic Surges Detection</title>
+<style>
+   
+.navbar a:hover {
+    background-color: orange;
+}
+
+
+.content {
+    margin-top: 20px;
+    text-align: center;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 18px;
+    color: white; 
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    background-color: rgb(0, 0, 0);
+    font-family: "Times New Roman", Times, serif;
+    font-size: 24px;
+    color: white;
+}
+
+#container {
+    background-color: red;
+    overflow: hidden;
+    text-align: center;
+    padding: 10px;
+    border-radius: 10px;
+    margin: 0 auto;
+    margin-top: 20px;
+    width: 70%;
+    background-image: linear-gradient(to right, rgb(18, 20, 20), rgb(0, 204, 255));
+    list-style-type: disc;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 18px;
+    color: rgb(255, 255, 255); 
+}
+
+button {
+    background-color: rgb(48, 160, 4);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    margin: 5px;
+    border-radius: 10px; 
+    font-family: "Times New Roman", Times, serif;
+    font-size: 18px;
+    color: white; 
+}
+
+button:hover {
+    background-color: rgb(202, 112, 2);
+}
+
+button:active {
+    background-color: orange;
+}
+
+#surgeResults {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 24px;
+    color: white; 
+}
+
+.success-text {
+    color: green;
+    font-weight: bold;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 24px;
+    color: white; 
+}
+
+    
+</style>
+</head>
+<body>
+<div id="container">
+    <h1>NETWORK TRAFFIC SURGES DETECTION</h1>
+    <input type="file" id="csvFileInput" accept=".csv">
+    <button onclick="loadCSV()">Load CSV</button> 
+    <button onclick="exploreData()">Explore Data</button>
+    <button onclick="detectSurges()">Detect Surges</button>
+    <button onclick="sendAlert()">Send Alert</button> 
+    <button onclick="steps()">Steps</button> 
+    
+    
+
+<div id="surgeResults"></div>
+</div>
+
+<script>
+    let dataset = []; 
+
+    // Function to load CSV file
+    function loadCSV() {
+        const fileInput = document.getElementById('csvFileInput');
+        const file = fileInput.files[0];
+
+        if (!file) {
+            alert('Please select a CSV file.');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const csvData = event.target.result;
+            processData(csvData);
+        };
+        reader.readAsText(file);
+    }
+
+    // Function to process CSV data
+    function processData(csvData) {
+        
+        const parsedData = csvData.split('\n').map(row => {
+            const [SourceIP, TotalLength] = row.split(',');
+            return { SourceIP, 'Total.Length.of.Fwd.Packets': parseInt(TotalLength) };
+        });
+        dataset = parsedData;
+        alert('CSV file loaded successfully!');
+    }
+
+    // Function to detect surges using Random Forest algorithm
+    function detectSurges() {
+        if (dataset.length === 0) {
+            alert('Please load the CSV file first.');
+            return;
+        }
+
+        // Function to preprocess data and train Random Forest model
+function preprocessAndTrainModel() {
+    if (dataset.length === 0) {
+        alert('Please load the CSV file first.');
+        return;
+    }
+
+}
+
+        // Predict surges
+        const predictedSurges = predictSurgesFromModel(dataset);
+
+        // Display results
+        const surgeResultsElement = document.getElementById('surgeResults');
+        surgeResultsElement.innerHTML = '<h2>Detected Surges:</h2>';
+        predictedSurges.forEach(surge => {
+            surgeResultsElement.innerHTML += `<p>Source IP: ${surge.SourceIP}, Total Length:  ${surge['Total.Length.of.Fwd.Packets']}</p>`;
+        });
+    }
+
+    // Function to predict surges from model 
+    function predictSurgesFromModel(data) {
+        
+        return data.filter(entry => entry['Total.Length.of.Fwd.Packets'] > 5000); 
+    }
+
+    // Function to explore data
+function exploreData() {
+    const surgeResultsElement = document.getElementById('surgeResults');
+    surgeResultsElement.innerHTML = '<h2>Data Exploration:</h2>';
+    
+    // Display data head info
+    const headInfo = `<p>Data Head:</p><pre>${JSON.stringify(dataset.slice(0, 5), null, 2)}</pre>`; 
+        surgeResultsElement.innerHTML += headInfo;
+
+
+
+        // Display data shape
+        const shapeInfo = `<p>Data Shape: [${dataset.length}, ${Object.keys(dataset[0]).length}]</p>`;
+        surgeResultsElement.innerHTML += shapeInfo;
+
+        // Display data columns
+        const columnsInfo = `<p>Data Columns: ${Object.keys(dataset[0]).join(', ')}</p>`;
+        surgeResultsElement.innerHTML += columnsInfo;
+// Display data columns as a list
+
+Object.keys(dataset[0]).forEach(column => {
+    columnsInfo += `<li>${column}</li>`;
+});
+columnsInfo += "</ul>";
+surgeResultsElement.innerHTML += columnsInfo;
+
+        // Function to plot correlation matrix (not implemented)
+        const correlationMatrixInfo = "<p>Correlation Matrix: (Not implemented)</p>";
+        surgeResultsElement.innerHTML += correlationMatrixInfo;
+
+        // Print numeric and non-numeric columns
+        const numericColumns = Object.keys(dataset[0]).filter(key => !isNaN(dataset[0][key]));
+        const nonNumericColumns = Object.keys(dataset[0]).filter(key => isNaN(dataset[0][key]));
+
+        const numericColumnsInfo = `<p>Numeric Columns: ${numericColumns.join(', ')}</p>`;
+        const nonNumericColumnsInfo = `<p>Non-Numeric Columns: ${nonNumericColumns.join(', ')}</p>`;
+
+        surgeResultsElement.innerHTML += numericColumnsInfo;
+        surgeResultsElement.innerHTML += nonNumericColumnsInfo;
+    }
+
+    let predictedSurges = []; // Variable to store predicted surges
+
+
+
+  // Function to send an alert
+  function sendAlert() {
+    // Check if dataset is empty
+    if (dataset.length === 0) {
+        alert('Please load the CSV file and detect surges first.');
+        return;
+    }
+
+    
+    const surgesText = predictedSurges.map(surge => `Source IP:    ${surge.SourceIP}, Total Length:    ${surge['Total.Length.of.Fwd.Packets']}`).join('\n');
+    console.log("Detected Surges:\n", surgesText);
+
+    const myHeaders = new Headers();
+    myHeaders.append("Authorization", "App 4f24ed75500dacbcbefe51937da70bfc-e1f95dae-3924-4579-b2bc-7e98a745469c");
+    myHeaders.append("Content-Type", "application/json");
+    myHeaders.append("Accept", "application/json");
+
+    const raw = JSON.stringify({
+        "messages": [
+            {
+                "destinations": [{"to": "254798999807"}],
+                "from": "ServiceSMS",
+                "text": `Surges have been detected, get back to your desk!!!\n${surgesText}`
+            }
+        ]
+    });
+
+    const requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+        redirect: "follow"
+    };
+
+
+    fetch("https://ggzvve.api.infobip.com/sms/2/text/advanced", requestOptions)
+        .then((response) => {
+            if (response.ok) {
+                console.log("Message sent successfully.");
+                alert("Message sent successfully.");
+                // Display success message
+                const successMessage = document.createElement('p');
+                successMessage.textContent = 'Message sent successfully.';
+                successMessage.classList.add('success-text');
+                surgeResultsElement.appendChild(successMessage); // Append success message to surge results
+            } else {
+                console.error("Failed to send message.");
+                alert("Failed to send message. Please try again."); 
+            }
+            return response.text();
+        })
+        .then((result) => console.log(result))
+        .catch((error) => console.error(error));
+}
+// Function to send alert
+function steps() {
+     // Check if dataset is empty
+     if (dataset.length === 0) {
+        alert('Please load the CSV file and detect surges first.');
+        return;
+    }
+    const surgeResultsElement = document.getElementById('surgeResults');
+
+// Prepare SMS message
+let message = '';
+if (dataset.length > 0) {
+    message = "To address network surges, follow these documented steps:\n\n";
+
+    // Display steps
+    const stepsList = [
+        "Determine if the surge is due to increased traffic, \nnetwork congestion, or a specific device or \napplication causing the surge.",
+        "Utilize network monitoring tools to track bandwidth usage, \nCPU utilization, and equipment performance \nto pinpoint the source\n of the surge.",
+        "Adjust network settings, such as Quality of Service (QoS) \npolicies, to prioritize critical traffic and alleviate \ncongestion during peak usage periods.",
+        "Consider upgrading network equipment, such as routers, \nswitches, and firewalls, to handle increased \nbandwidth demands and prevent bottlenecks.",
+        "Use traffic shaping techniques to regulate the flow of data \nand prevent sudden spikes in traffic from overwhelming \nthe network.",
+        "Ensure that network devices have the latest firmware and \nsoftware updates installed to address security vulnerabilities \nand improve performance.",
+        "Distribute network traffic evenly across multiple servers \nor connections to prevent individual components from becoming\n overloaded during surges.",
+        "Increase network bandwidth or add additional resources \nto accommodate growing traffic demands and prevent future surges.",
+        "Continuously monitor network performance and adjust \nconfigurations as needed to adapt to changing usage patterns and\n mitigate surges effectively."
+    ];
+
+    // Display each step
+    stepsList.forEach((step, index) => {
+        message += `${index + 1}. ${step}\n\n`;
+    });
+
+    // Display the message
+    surgeResultsElement.innerHTML = `<pre>${message}</pre>`;
+}
+
+}
+
+
+function runRandomForestRegression() {
+    // Check if dataset is empty
+    if (dataset.length === 0) {
+        alert('Please load the CSV file first.');
+        return;
+    }
+    
+    /// Assuming 'data' is an object containing the data
+let dataX = Object.assign({}, data);
+delete dataX["Total.Length.of.Fwd.Packets"];
+let dataY = data["Total.Length.of.Fwd.Packets"];
+
+// Assuming 'train_test_split' is a function for splitting data
+let train_test_split = function(dataX, dataY, test_size) {
+    // Implementation of train_test_split function
+};
+
+// Split the data into training and testing sets
+let [trainX, testX, trainY, testY] = train_test_split(dataX, dataY, 0.2);
+
+// Assuming 'LinearRegression' is a class for linear regression
+class LinearRegression {
+    constructor() {
+        // Implementation of Linear Regression constructor
+    }
+    
+    fit(trainX, trainY) {
+        // Implementation of fit method
+    }
+    
+    predict(testX) {
+        // Implementation of predict method
+    }
+}
+
+// Create an instance of LinearRegression
+let LM_clf = new LinearRegression();
+
+// Fit the model with training data
+LM_clf.fit(trainX, trainY);
+
+// Predict using test data
+let predictY = LM_clf.predict(testX);
+
+// Assuming 'r2_score' is a function for calculating R-squared score
+let r2_score = function(testY, predictY) {
+    // Implementation of r2_score function
+};
+
+// Calculate R-squared score
+let rSquared = r2_score(testY, predictY);
+}
+
+
+
+</script>
+</body>
+</html>
